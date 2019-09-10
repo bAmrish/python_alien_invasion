@@ -1,5 +1,4 @@
 import pygame
-from settings import Settings
 
 class Ship:
     """ This class handles all the game resources for alien ship. """
@@ -9,7 +8,7 @@ class Ship:
 
         self.screen = game.screen
         self.screen_rect = game.screen.get_rect()
-        self.settings = Settings()
+        self.settings = game.settings
 
         # load ship image and get its rect
         self.image = pygame.image.load('images/ship.bmp')
