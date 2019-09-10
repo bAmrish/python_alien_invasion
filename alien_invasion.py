@@ -36,6 +36,8 @@ class AlienInvasion:
             self._check_events()
             self.ship.update()
             self._update_bullets()
+            self.aliens.update()
+            self._check_fleet_edge()
             self._update_screen()
 
     def _check_events(self):
@@ -75,9 +77,42 @@ class AlienInvasion:
             if bullet.rect.bottom < 0:
                 self.bullets.remove(bullet)
 
+    def _create_alien(self, number, row):
+        alien = Alien(self)
+
+        alien_width, alien_height = alien.rect.size
+        alien.x = alien_width + (alien_width * 2 * number)
+        alien.y = alien_height + (alien_height * 2 * row)
+        alien.rect.x = alien.x
+        alien.rect.y = alien.y
+        self.aliens.add(alien)
+
     def _create_fleet(self):
-        new_alien = Alien(self)
-        self.aliens.add(new_alien)
+        alien = Alien(self)
+
+        alien_width, alien_height = alien.rect.size
+        ship_height = self.ship.rect.height
+
+        available_width = self.settings.screen_width - (2 * alien_width)
+        available_height = self.settings.screen_height - (3 * alien_height) - ship_height
+
+        total_aliens_per_row = available_width // (alien_width * 2)
+        total_rows = available_height // (alien_height * 2)
+
+        for row_number in range(total_rows):
+            for alien_number in range(total_aliens_per_row):
+                self._create_alien(alien_number, row_number)
+
+    def _check_fleet_edge(self):
+        for alien in self.aliens:
+            if alien.check_edge():
+                self._change_fleet_direction()
+                break
+
+    def _change_fleet_direction(self):
+        self.settings.alien_direction *= -1
+        for alien in self.aliens:
+            alien.rect.y += self.settings.alien_y_speed
 
     def _update_screen(self):
         # Redraw the screen during each pass of the loop

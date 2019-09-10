@@ -19,3 +19,9 @@ class Settings:
         self.bullet_width = 3
         self.bullet_color = (0, 0, 0)
         self.bullets_allowed = 3
+
+        # Alien's setting
+        # we use 1 for right and -1 for left direction
+        self.alien_direction = 1
+        self.alien_x_speed = 3
+        self.alien_y_speed = 10
