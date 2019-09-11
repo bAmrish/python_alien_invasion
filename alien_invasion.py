@@ -1,10 +1,12 @@
 import sys
 import pygame
+from time import sleep
 
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
+from game_stats import GameStats
 
 
 class AlienInvasion:
@@ -14,13 +16,15 @@ class AlienInvasion:
         """ Initialize the game and create game resources. """
         pygame.init()
         self.settings = Settings()
-
+        self.stats = GameStats(self)
         if self.settings.full_screen_mode:
             self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
             self.settings.screen_width = self.screen.get_rect().width
             self.settings.screen_height = self.screen.get_rect().height
         else:
             self.screen = pygame.display.set_mode(self.settings.screen_size)
+
+        self.screen_rect = self.screen.get_rect()
 
         pygame.display.set_caption(self.settings.game_caption)
 
@@ -34,10 +38,12 @@ class AlienInvasion:
 
         while True:
             self._check_events()
-            self.ship.update()
-            self._update_bullets()
-            self.aliens.update()
-            self._check_fleet_edge()
+
+            if self.stats.active:
+                self.ship.update()
+                self._update_bullets()
+                self._update_aliens()
+
             self._update_screen()
 
     def _check_events(self):
@@ -99,6 +105,39 @@ class AlienInvasion:
         alien.rect.x = alien.x
         alien.rect.y = alien.y
         self.aliens.add(alien)
+
+    def _update_aliens(self):
+        """ checks the position of ship and aliens and detects alien collisions. """
+
+        self.aliens.update()
+        self._check_fleet_edge()
+        self._check_alien_collision()
+
+    def _check_alien_collision(self):
+        """ checks collision between alien and ship. """
+
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            self._ship_hit()
+
+        for alien in self.aliens:
+            if alien.rect.bottom >= self.screen_rect.bottom:
+                self._ship_hit()
+                break
+
+    def _ship_hit(self):
+        """ Handle a scenario where player looses a ship. """
+        self.stats.ship_left -= 1
+
+        if self.stats.ship_left > 0:
+            self.bullets.empty()
+            self.aliens.empty()
+            self._create_fleet()
+            self.ship.center_ship()
+            sleep(1)
+        else:
+            self.stats.active = False
+            print("Game Over!!")
+        pass
 
     def _create_fleet(self):
         alien = Alien(self)
