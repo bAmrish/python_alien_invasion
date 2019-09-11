@@ -81,6 +81,10 @@ class AlienInvasion:
         # Detect collision between bullet and aliens
         pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
 
+        if not self.aliens:
+            self.bullets.empty()
+            self._create_fleet()
+
     def _create_alien(self, number, row):
         alien = Alien(self)
 
