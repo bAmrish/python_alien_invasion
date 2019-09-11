@@ -11,7 +11,7 @@ class Settings:
         self.game_caption = 'Alien Invasion'
 
         # Ship's settings
-        self.ship_speed = 5
+        self.ship_speed = 10
 
         # Bullet's settings
         self.bullet_speed = 3

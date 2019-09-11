@@ -72,10 +72,14 @@ class AlienInvasion:
             self.bullets.add(new_bullet)
 
     def _update_bullets(self):
+        """ Update the position of the bullets and get rid of the old bullets. """
         self.bullets.update()
         for bullet in self.bullets.copy():
             if bullet.rect.bottom < 0:
                 self.bullets.remove(bullet)
+
+        # Detect collision between bullet and aliens
+        pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
 
     def _create_alien(self, number, row):
         alien = Alien(self)
