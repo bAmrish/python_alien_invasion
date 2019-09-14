@@ -7,6 +7,7 @@ from ship import Ship
 from bullet import Bullet
 from alien import Alien
 from game_stats import GameStats
+from button import Button
 
 
 class AlienInvasion:
@@ -32,6 +33,7 @@ class AlienInvasion:
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
+        self.play_button = Button('Play', self)
 
     def run_game(self):
         """ Start the main loop for the game. """
@@ -55,6 +57,8 @@ class AlienInvasion:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                self._check_mouse_down_events(event)
 
     def _check_keydown_events(self, event):
         if event.key == pygame.K_RIGHT:
@@ -71,6 +75,20 @@ class AlienInvasion:
             self.ship.moving_right = False
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
+
+    def _check_mouse_down_events(self, event):
+        mouse_pos = pygame.mouse.get_pos()
+        self._check_play_button_click(mouse_pos)
+
+    def _check_play_button_click(self, mouse_pos):
+
+        if self.play_button.rect.collidepoint(mouse_pos)\
+                and not self.stats.active:
+            self.stats.reset_stats()
+            self.stats.active = True
+            self.aliens.empty()
+            self.bullets.empty()
+            self.ship.center_ship()
 
     def _fire_bullet(self):
         if len(self.bullets) < self.settings.bullets_allowed:
@@ -175,6 +193,13 @@ class AlienInvasion:
             bullet.draw_bullet()
 
         self.aliens.draw(self.screen)
+
+        if not self.stats.active:
+            # Only show the play button if the game is not active.
+            self.play_button.draw()
+            pygame.mouse.set_visible(True)
+        else:
+            pygame.mouse.set_visible(False)
 
         # Make recently drawn screen visible.
         pygame.display.flip()
