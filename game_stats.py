@@ -3,6 +3,7 @@ class GameStats:
 
     active: bool
     ship_left: int
+    score: int
     
     def __init__(self, game):
         """ Initialize new game statistics. """
@@ -12,3 +13,4 @@ class GameStats:
     def reset_stats(self):
         self.ship_left = self.settings.ship_limit
         self.active = False
+        self.score = 0
