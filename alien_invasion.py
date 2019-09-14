@@ -116,7 +116,6 @@ class AlienInvasion:
         self._detect_bullet_alien_collision()
 
     def _detect_bullet_alien_collision(self):
-        print('_detect_bullet_alien_collision.')
         # Detect collision between bullet and aliens
 
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
@@ -131,7 +130,6 @@ class AlienInvasion:
             self._level_up()
 
     def _level_up(self):
-        print('level up called. level ', self.stats.level)
         self.stats.level += 1
         self.bullets.empty()
         self._create_fleet()
@@ -180,10 +178,10 @@ class AlienInvasion:
             self.aliens.empty()
             self._create_fleet()
             self.ship.center_ship()
+            self.scoreboard.update()
             sleep(1)
         else:
             self.stats.active = False
-            print("Game Over!!")
         pass
 
     def _create_fleet(self):

@@ -1,10 +1,13 @@
 import pygame
 
-class Ship:
+
+class Ship(pygame.sprite.Sprite):
     """ This class handles all the game resources for alien ship. """
 
     def __init__(self, game):
         """ Initialize the ship and it's starting position. """
+
+        super().__init__()
 
         self.screen = game.screen
         self.screen_rect = game.screen.get_rect()
