@@ -91,7 +91,8 @@ class AlienInvasion:
         self.aliens.empty()
         self.bullets.empty()
         self.ship.center_ship()
-        self.scoreboard.prepare_score()
+        self.scoreboard.update()
+        self._create_fleet()
 
     def _check_play_button_click(self, mouse_pos):
 
@@ -115,6 +116,7 @@ class AlienInvasion:
         self._detect_bullet_alien_collision()
 
     def _detect_bullet_alien_collision(self):
+        print('_detect_bullet_alien_collision.')
         # Detect collision between bullet and aliens
 
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
@@ -123,11 +125,23 @@ class AlienInvasion:
             for aliens in collisions.values():
                 if aliens:
                     self.stats.score += self.settings.score_per_alien * len(aliens)
-                    self.scoreboard.prepare_score()
+                    self.scoreboard.update()
 
         if not self.aliens:
-            self.bullets.empty()
-            self._create_fleet()
+            self._level_up()
+
+    def _level_up(self):
+        print('level up called. level ', self.stats.level)
+        self.stats.level += 1
+        self.bullets.empty()
+        self._create_fleet()
+        self.settings.alien_x_speed *= self.settings.level_alien_speed_increase
+        self.settings.ship_speed *= self.settings.level_ship_speed_increase
+        self.settings.bullet_speed *= self.settings.level_bullet_speed_increase
+
+        # round the score per alien to the nearest 10.
+        self.settings.score_per_alien *= int(round(self.settings.level_score_increase, -1))
+        self.scoreboard.update()
 
     def _create_alien(self, number, row):
         alien = Alien(self)
