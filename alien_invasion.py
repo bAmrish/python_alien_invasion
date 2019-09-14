@@ -67,6 +67,8 @@ class AlienInvasion:
             self.ship.moving_left = True
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
+        elif event.key == pygame.K_p:
+            self._start_game()
         elif event.key == pygame.K_q:
             sys.exit()
 
@@ -80,15 +82,18 @@ class AlienInvasion:
         mouse_pos = pygame.mouse.get_pos()
         self._check_play_button_click(mouse_pos)
 
+    def _start_game(self):
+        self.stats.reset_stats()
+        self.stats.active = True
+        self.aliens.empty()
+        self.bullets.empty()
+        self.ship.center_ship()
+
     def _check_play_button_click(self, mouse_pos):
 
         if self.play_button.rect.collidepoint(mouse_pos)\
                 and not self.stats.active:
-            self.stats.reset_stats()
-            self.stats.active = True
-            self.aliens.empty()
-            self.bullets.empty()
-            self.ship.center_ship()
+            self._start_game()
 
     def _fire_bullet(self):
         if len(self.bullets) < self.settings.bullets_allowed:
