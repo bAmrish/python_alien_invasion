@@ -37,7 +37,7 @@ class Settings:
     def reinitialize_dynamic_settings(self):
         """ Reinitialize the dynamic settings each time the game starts. """
 
-        self.alien_x_speed = 10
+        self.alien_x_speed = 5
 
         # We don't change the y speed with level  but we will still keep the speed settings together.
         self.alien_y_speed = 10
