@@ -9,6 +9,8 @@ class ScoreBoard:
     level_image: pygame.Surface
     score_image_rect: pygame.Rect
     score_image: pygame.Surface
+    high_score_image_rect: pygame.Rect
+    high_score_image: pygame.Surface
 
     def __init__(self, game):
         """ Initialize the scoreboard. """
@@ -28,6 +30,7 @@ class ScoreBoard:
 
     def update(self):
         self.prepare_score()
+        self.prepare_high_score()
         self.prepare_level()
         self.prepare_ships()
 
@@ -37,6 +40,13 @@ class ScoreBoard:
         self.score_image_rect = self.score_image.get_rect()
         self.score_image_rect.right = self.screen_rect.right - 10
         self.score_image_rect.top = self.screen_rect.top + 10
+
+    def prepare_high_score(self):
+        high_score = str(self.stats.high_score)
+        self.high_score_image = self.font.render('High Score: ' + high_score, True, self.text_color, self.background_color)
+        self.high_score_image_rect = self.high_score_image.get_rect()
+        self.high_score_image_rect.center = self.screen_rect.center
+        self.high_score_image_rect.top = self.screen_rect.top + 10
 
     def prepare_level(self):
         level = str(self.stats.level)
@@ -56,5 +66,6 @@ class ScoreBoard:
 
     def draw(self):
         self.screen.blit(self.score_image, self.score_image_rect)
+        self.screen.blit(self.high_score_image, self.high_score_image_rect)
         self.screen.blit(self.level_image, self.level_image_rect)
         self.ships.draw(self.screen)

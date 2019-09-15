@@ -25,16 +25,19 @@ class Settings:
         self.bullet_width = 3
         self.bullet_color = (0, 0, 0)
         self.bullets_allowed = 3
+
+        # Level settings
         self.level_alien_speed_increase = 1.2
         self.level_ship_speed_increase = 1.2
         self.level_bullet_speed_increase = 1.2
         self.level_score_increase = 1.5
+
         self.reinitialize_dynamic_settings()
 
     def reinitialize_dynamic_settings(self):
         """ Reinitialize the dynamic settings each time the game starts. """
 
-        self.alien_x_speed = 3
+        self.alien_x_speed = 10
 
         # We don't change the y speed with level  but we will still keep the speed settings together.
         self.alien_y_speed = 10

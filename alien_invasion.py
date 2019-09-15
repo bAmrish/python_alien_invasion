@@ -122,9 +122,7 @@ class AlienInvasion:
         
         if collisions:
             for aliens in collisions.values():
-                if aliens:
-                    self.stats.score += self.settings.score_per_alien * len(aliens)
-                    self.scoreboard.update()
+                self._update_score(len(aliens))
 
         if not self.aliens:
             self._level_up()
@@ -139,6 +137,13 @@ class AlienInvasion:
 
         # round the score per alien to the nearest 10.
         self.settings.score_per_alien *= int(round(self.settings.level_score_increase, -1))
+        self.scoreboard.update()
+
+    def _update_score(self, aliens_killed):
+        self.stats.score += self.settings.score_per_alien * aliens_killed
+        if self.stats.high_score < self.stats.score:
+            self.stats.high_score = self.stats.score
+
         self.scoreboard.update()
 
     def _create_alien(self, number, row):
@@ -174,15 +179,18 @@ class AlienInvasion:
         self.stats.ship_left -= 1
 
         if self.stats.ship_left > 0:
-            self.bullets.empty()
-            self.aliens.empty()
-            self._create_fleet()
-            self.ship.center_ship()
-            self.scoreboard.update()
+            self._reset_wave()
             sleep(1)
         else:
             self.stats.active = False
         pass
+
+    def _reset_wave(self):
+        self.bullets.empty()
+        self.aliens.empty()
+        self._create_fleet()
+        self.ship.center_ship()
+        self.scoreboard.update()
 
     def _create_fleet(self):
         alien = Alien(self)
