@@ -9,7 +9,9 @@ from alien import Alien
 from game_stats import GameStats
 from button import Button
 from scoreboard import ScoreBoard
-
+from power import Power, PowerType
+from random import choices
+from activated_powers import ActivatedPowers
 
 class AlienInvasion:
     """ Overall class to manage game assets and behavior. """
@@ -36,6 +38,9 @@ class AlienInvasion:
         self._create_fleet()
         self.play_button = Button('Play', self)
         self.scoreboard = ScoreBoard(self)
+        self.powers = pygame.sprite.Group()
+        self.timer = None
+        self.activated_powers = ActivatedPowers(self)
 
     def run_game(self):
         """ Start the main loop for the game. """
@@ -44,6 +49,7 @@ class AlienInvasion:
             self._check_events()
 
             if self.stats.active:
+                self._update_powers()
                 self.ship.update()
                 self._update_bullets()
                 self._update_aliens()
@@ -100,6 +106,32 @@ class AlienInvasion:
                 and not self.stats.active:
             self._start_game()
 
+    def _update_powers(self):
+
+        if self.powers:
+            for power in self.powers:
+                power.update()
+                if power.rect.bottom >= self.screen_rect.bottom:
+                    self.powers.remove(power)
+        else:
+            population = [0, 1]
+            weight = [0.99, 0.01]
+            the_choice = choices(population, weight)
+            show_power = the_choice[0]
+
+            if show_power:
+                self.powers.add(Power(PowerType.SUPER_BULLET, self))
+
+        self._check_power_ship_collision()
+
+    def _check_power_ship_collision(self):
+        captured_powers = pygame.sprite.spritecollide(self.ship, self.powers, True)
+
+        if captured_powers:
+            for power in captured_powers:
+                self.activated_powers.activate(power.type)
+                print("You picked up the power: " + str(power.type))
+
     def _fire_bullet(self):
         if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
@@ -118,7 +150,9 @@ class AlienInvasion:
     def _detect_bullet_alien_collision(self):
         # Detect collision between bullet and aliens
 
-        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        delete_bullets = not self.activated_powers.is_active(PowerType.SUPER_BULLET)
+
+        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, delete_bullets, True)
         
         if collisions:
             for aliens in collisions.values():
@@ -237,6 +271,11 @@ class AlienInvasion:
             pygame.mouse.set_visible(False)
 
         self.scoreboard.draw()
+
+        # for power in self.powers:
+        #     power.draw()
+        self.powers.draw(self.screen)
+
         # Make recently drawn screen visible.
         pygame.display.flip()
 
